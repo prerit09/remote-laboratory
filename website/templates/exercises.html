@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %} Home {% endblock %}
+
+
+{% block content %} 
+
+{% if user.professor_token != None %}
+
+<h1 class="display-1" align="center"> Create an Exercise </h1>
+
+{% else %}
+
+<h1 class="display-1" align="center"> Exercises </h1>
+
+{% endif %}
+
+{% endblock %}
+
