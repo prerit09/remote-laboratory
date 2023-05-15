@@ -9,9 +9,51 @@
 
 <h1 class="display-1" align="center"> Create an Exercise </h1>
 
+<form method="POST">
+    <div class="form-group">
+        <label for="title">Title</label>
+        <input
+        type="text"
+        id="title"
+        name="title"
+        class="form-control"
+        placeholder="Enter Title"
+        />
+        <br />
+        <label for="description">Description</label>
+        <input
+        type="text"
+        id="description"
+        name="description"
+        class="form-control"
+        placeholder="Enter Description"
+        />
+        <br />
+        <label for="solution">Solution</label>
+        <input
+        type="solution"
+        id="solution"
+        name="solution"
+        class="form-control"
+        placeholder="Enter Solution"
+        />
+        <br />
+        <div align="center"><button class="btn btn-primary" type="submit">Done</button></div>        
+    </div>
+</form>
+
 {% else %}
 
 <h1 class="display-1" align="center"> Exercises </h1>
+
+{% for exercise in exercises %}
+<div class="card border-dark">
+    <div class="card-header">
+        <p>{{exercise.id}}. <a href="/exercise/{{exercise.id}}">{{exercise.title}}</a></p>
+    </div>
+</div>
+{% endfor %} 
+
 
 {% endif %}
 

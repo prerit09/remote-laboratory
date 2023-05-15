@@ -1,6 +1,7 @@
+from .common_code import result
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
-from .models import User
+from .models import User, Exercise
 # Post, Comment, Like
 from . import db
 
@@ -18,11 +19,53 @@ def home():
 @views.route("/exercises", methods=['GET', 'POST'])
 @login_required
 def exercises():
-    return render_template('exercises.html', user=current_user)
+    exercises = Exercise.query.all()
+    return render_template('exercises.html', user=current_user, exercises=exercises)
+
+@views.route("/exercise/<exercise_id>", methods=['GET', 'POST'])
+@login_required
+def exercise(exercise_id):
+    exercise = Exercise.query.filter_by(id=exercise_id).first()
+    if request.method == 'POST':
+        code = request.form.get('code')
+        stdin = request.form.get('stdin')
+        expected = exercise.solution
+        output = result(code, stdin, expected)
+        print(result)
+
+        return render_template("code.html", user=current_user, exercise=exercise)
+
+    print("in progress")
+    return render_template("code.html", user=current_user, exercise=exercise)
+
+# @views.route("/submission/<submission_id>", methods=['POST'])
+# @login_required
+# def submission(submission_id):
+#     if request.method == 'POST':
+#         print(submission_id)
+
+#     # exercise = Exercise.query.filter_by(id=exercise_id).first()
+#     return render_template("views.home", user=current_user, exercise=exercise)
 
 @views.route("/create-exercise", methods=['GET', 'POST'])
 @login_required
 def create_exercise():
+    if request.method == "POST":
+        title = request.form.get('title')
+        description = request.form.get('description')
+        solution = request.form.get('solution')
+        if not title:
+            flash('Title cannot be empty', category='error')
+        elif not description:
+            flash('Description cannot be empty', category='error')
+        elif not solution:
+            flash('Solution cannot be empty', category='error')
+        else:
+            exercise = Exercise(title=title, description=description, solution=solution, author=current_user.id)
+            db.session.add(exercise)
+            db.session.commit()
+            flash('Exercise created!', category='success')
+            return redirect(url_for("views.home"))
     return render_template('exercises.html', user=current_user)
 
 # @views.route("/create-post", methods=['GET', 'POST'])

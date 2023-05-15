@@ -9,10 +9,17 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(150))
     professor_token = db.Column(db.String(150), nullable=True)
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
-    # posts = db.relationship('Post', backref='user', passive_deletes=True)
+    exercise = db.relationship('Exercise', backref='user', passive_deletes=True)
     # comments = db.relationship('Comment', backref='user', passive_deletes=True)
     # likes = db.relationship('Like', backref='user', passive_deletes=True)
 
+class Exercise(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(150), unique=True)
+    description = db.Column(db.String(150), unique=False)
+    solution = db.Column(db.String(150), nullable=False)
+    author = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
+    date_created = db.Column(db.DateTime(timezone=True), default=func.now())
 
 # class Post(db.Model):
 #     id = db.Column(db.Integer, primary_key=True)
