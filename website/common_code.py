@@ -2,19 +2,25 @@ import requests
 from flask import Flask, redirect, url_for, render_template, request
 
 
-def result(code, input, expected):
+def result(code, input, expected=None):
     if(request.method == "POST"):
         
         url = "http://localhost:2358/submissions?wait=true"
         
-        data = {
-            "source_code": code,
-            "language_id": "52",
-            "stdin": input,
-            "expected_output" : expected
-        }
-        
-        print(data)
+        if expected is not None:
+            data = {
+                "source_code": code,
+                "language_id": "52",
+                "stdin": input,
+                "expected_output" : expected
+            }
+        else:
+            data = {
+                "source_code": code,
+                "language_id": "52",
+                "stdin": input,
+            }
+        # print(data)
         
         response = requests.post(url, json=data)
         
@@ -24,9 +30,9 @@ def result(code, input, expected):
         
         output = requests.get("http://localhost:2358/submissions/"+str(token))
         
-        print(output.json())
+        # print(output.json())
         
-        json_output = output.json()
+        # json_output = output.json()
 
         # out = "Output : \n" + json_output[
         #     'stdout'] + "\n\nTime Taken : " + json_output[

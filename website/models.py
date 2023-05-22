@@ -10,16 +10,34 @@ class User(db.Model, UserMixin):
     professor_token = db.Column(db.String(150), nullable=True)
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
     exercise = db.relationship('Exercise', backref='user', passive_deletes=True)
-    # comments = db.relationship('Comment', backref='user', passive_deletes=True)
-    # likes = db.relationship('Like', backref='user', passive_deletes=True)
+    submission = db.relationship('Submission', backref='user', passive_deletes=True)
 
 class Exercise(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(150), unique=True)
     description = db.Column(db.String(150), unique=False)
-    solution = db.Column(db.String(150), nullable=False)
+    solution = db.Column(db.String(150))
     author = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
+    testcase = db.relationship('TestCase', backref='exercise', passive_deletes=True)
+    submission = db.relationship('Submission', backref='exercise', passive_deletes=True)
+
+class Submission(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(250), unique=True)
+    score = db.Column(db.String(150), unique=False)
+    author = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
+    exercise_id = db.Column(db.Integer, db.ForeignKey('exercise.id', ondelete="CASCADE"), nullable=False)
+    date_created = db.Column(db.DateTime(timezone=True), default=func.now())
+
+class TestCase(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    input = db.Column(db.String(150), unique=True)
+    output = db.Column(db.String(150), unique=False)
+    author = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
+    exercise_id = db.Column(db.Integer, db.ForeignKey('exercise.id', ondelete="CASCADE"), nullable=False)
+    date_created = db.Column(db.DateTime(timezone=True), default=func.now())
+
 
 # class Post(db.Model):
 #     id = db.Column(db.Integer, primary_key=True)

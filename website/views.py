@@ -1,7 +1,7 @@
 from .common_code import result
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
-from .models import User, Exercise
+from .models import User, Exercise, TestCase, Submission
 # Post, Comment, Like
 from . import db
 
@@ -26,17 +26,64 @@ def exercises():
 @login_required
 def exercise(exercise_id):
     exercise = Exercise.query.filter_by(id=exercise_id).first()
+    testcases = TestCase.query.filter_by(exercise_id=exercise.id).all()
+    submissions = Submission.query.filter_by(exercise_id=exercise.id).all()
     if request.method == 'POST':
         code = request.form.get('code')
         stdin = request.form.get('stdin')
-        expected = exercise.solution
-        output = result(code, stdin, expected)
-        print(result)
+        if(request.form['action'] == "Run"):
+            print("Code Running")
+            print(code)
+            output = result(code, stdin)
+            print(output)
+            return render_template("code.html", user=current_user, exercise=exercise, output=output)
+        elif(request.form['action'] == "Test" or request.form['action'] == "submit"):
+            print("Code under Test")
+            score=0
+            if exercise.solution is not None:
+                print("Single Solution")
+            
+                expected = exercise.solution
+                output = result(code, stdin, expected)
+                if(output['status']['description'] == 'Accepted'):
+                    score+=1
+                print(output)
+                return render_template("code.html", user=current_user, exercise=exercise, output=output)
+            elif exercise.testcase :
+                print("Multiple Test Cases")
 
-        return render_template("code.html", user=current_user, exercise=exercise)
+                outputs=[]
+                for testcase in testcases:
+                    output = result(code, testcase.input, testcase.output)
+                    outputs.append(output)
+
+                passed=0
+                for output in outputs:  
+                    print(output['status']['description'])
+                    if(output['status']['description'] == 'Accepted'):
+                        passed+=1
+                
+                if passed == len(testcases):
+                    html = "Congratulations! All test cases passed!"
+                else:
+                    html = str(passed) + "/" + str(len(testcases))
+
+                if(request.form['action'] == "submit"):
+                    score = passed
+                    submission = Submission(code=code, score=score, author=current_user.id, exercise_id=exercise.id)
+                    db.session.add(submission)
+                    db.session.commit()
+
+                return render_template("code.html", user=current_user, exercise=exercise, output=None, testcase=html)
+        # else:
+        #     print("code submitted")
+        #     code = request.form.get('code')
+
+
+            return render_template("code.html", user=current_user, exercise=exercise, output=None)
 
     print("in progress")
-    return render_template("code.html", user=current_user, exercise=exercise)
+    return render_template("code.html", user=current_user, exercise=exercise, output=None)
 
 # @views.route("/submission/<submission_id>", methods=['POST'])
 # @login_required
@@ -54,12 +101,29 @@ def create_exercise():
         title = request.form.get('title')
         description = request.form.get('description')
         solution = request.form.get('solution')
-        if not title:
-            flash('Title cannot be empty', category='error')
-        elif not description:
-            flash('Description cannot be empty', category='error')
-        elif not solution:
-            flash('Solution cannot be empty', category='error')
+
+        if not solution:
+            count=1
+            test_cases_dict = {}
+            stdin = request.form.get("stdin"+str(count))
+            while(stdin is not None):
+                stdin = request.form.get("stdin"+str(count))
+                test_cases_dict[stdin] = request.form.get("stdout"+str(count))
+                count+=1
+                stdin = request.form.get("stdin"+str(count))
+
+            exercise = Exercise(title=title, description=description, author=current_user.id)
+            db.session.add(exercise)
+            db.session.commit()
+            
+            for stdin in test_cases_dict.keys():
+                testcase = TestCase(input=stdin, output=test_cases_dict[stdin], author=current_user.id, exercise_id=exercise.id)
+                db.session.add(testcase)
+                db.session.commit()
+
+            print(exercise.testcase)
+            flash('Exercise created!', category='success')
+
         else:
             exercise = Exercise(title=title, description=description, solution=solution, author=current_user.id)
             db.session.add(exercise)

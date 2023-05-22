@@ -10,6 +10,9 @@
 
 <p align="center">Solution : {{exercise.solution}} </p>
 
+{% for testcase in testcases %} 
+<p align="center">Test Case : {{testcase.input}} - {{testcase.output}} </p>
+{% endfor %} 
 
 <p align="center">Logged in as : {{user.username}} </p>
 
@@ -26,18 +29,31 @@
                     <textarea class="form-control" id="stdin" name="stdin" rows="5"> </textarea>
                 </div>
                 <div class="d-flex justify-content-center">
-                    <button type="submit" value="submit" class="btn btn-primary m-3">Submit</button>
+                    <button type="submit" name="action" value="submit" onclick="return confirm('Are you sure?')" class="btn btn-primary m-3">Submit</button>
+                    <input type ="submit" name="action" value="Run" class="btn btn-primary m-3">
+                    <input type ="submit" name="action" value="Test" class="btn btn-primary m-3">
                     <button type="reset" value="reset" class="btn btn-primary m-3">Reset</button>
                 </div>
             </form>
         </div>
         <div class="col d-flex justify-content-center border border-secondary rounded p-3 m-3">    
-            <!-- <div id="result_div">
-                {% autoescape false %}
-            
-                <samp> {{ usr }} </samp>
-                {% endautoescape %}
-            </div> -->
+            <div class="h4" id="result_div">
+                {% if testcase %}
+                    <pre> Number of test cases passed : 
+                        <pre class=" h4 bg-primary-subtle" align="center">{{testcase}} </pre>
+                    </pre>           
+                {% endif %}
+                
+                {% if output is not none %}
+                    {% autoescape false %}
+                        <pre>Output: </pre><pre>{{output['stdout']}}</pre>
+                        <pre>Time Taken: <pre>{{ output['time'] }}</pre></pre>
+                        <pre>Error: <pre>{{ output['stderr'] }}</pre></pre>
+                        <pre>Status: <pre>{{ output['status']['description'] }}</pre></pre>
+                    {% endautoescape %}                
+                {% endif %}
+                
+            </div>
         </div>
     </div>
 
