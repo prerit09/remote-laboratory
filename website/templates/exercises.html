@@ -7,33 +7,49 @@
 
 {% if user.professor_token != None %}
 
-    <h1 class="display-1" align="center"> Exercises </h1>
-
-{% for exercise in exercises %}
-<div class="card border-dark">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <p class="lead">{{exercise.id}}. <a href="/exercise/{{exercise.id}}">{{exercise.title}}</a></p>
-        <p class="lead">{{exercise.user.username}}</p>
+<h1 class="display-1" align="center"> Exercises </h1>
+<table class="table">
+    <thead>
+        <tr>
+        <th scope="col">#</th>
+        <th scope="col">Exercise</th>
+        <th scope="col">Created By</th>
+        <th scope="col">More</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for exercise in exercises %}
+    <tr>
+    <th scope="row">{{loop.index}}</th>
+    <td>{{exercise.title}}</td>
+    {% if user.id == exercise.author %}
+    <td>You</td>
+    <td>
         <div>
-            {% if user.id == exercise.author %}
-
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"> More
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a href="/view-submissions/{{exercise.id}}" class="dropdown-item">View Submissions</a></li>
-                        <li><a href="/delete-exercise/{{exercise.id}}" onclick="return confirm('Are you sure?')" class="dropdown-item">Delete</a></li>
-                    </ul>
-                </div>
-            
-            {% else %}
-            {% endif %}
-            
+            <div class="btn-group">
+                <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown"> More
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="/view-submissions/{{exercise.id}}" class="dropdown-item">View Submissions</a></li>
+                    <li><a href="/exercise/{{exercise.id}}" class="dropdown-item">Start</a></li>
+                    <li><a href="/delete-exercise/{{exercise.id}}" onclick="return confirm('Are you sure?')" class="dropdown-item">Delete</a></li>
+                </ul>
+            </div>
         </div>
+    </td>
 
-    </div>
-</div>
-{% endfor %} 
+    {% else %}
+    <td>{{exercise.user.username}}</td>
+    <td>
+        <a href="/exercise/{{exercise.id}}"><button type="button" class="btn btn-primary">Start</button></a>
+    </td>
+    {% endif %}            
+    <!-- <a href="/exercise/{{exercise.id}}"><button type="button" class="btn btn-primary">Start</button></a> -->
+    </tr>
+    {% endfor %}
+
+</tbody>
+</table>
 
 {% else %}
 
@@ -58,7 +74,7 @@
         <a href="/exercise/{{exercise.id}}"><button type="button" class="btn btn-primary">Start</button></a>
     </td>
     </tr>
-{% endfor %}
+        {% endfor %}
 
 </tbody>
 </table>

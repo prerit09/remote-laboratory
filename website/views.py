@@ -50,11 +50,17 @@ def delete_exercise(exercise_id):
 @login_required
 def view_submissions(exercise_id):
     submissions = Submission.query.filter_by(exercise_id=exercise_id).all()
-    print(submissions)
-    for submission in submissions:
-        print(submission.code)
-        print(submission.score)
-        print(submission.user.username)
+    if not submissions:
+        flash('No submissions yet!', category='error')
+        return redirect(url_for('views.exercises'))
+    else:
+        exercise_name = submissions[0].exercise.title
+        return render_template('submissions.html', user=current_user, submissions=submissions, exercise_name=exercise_name)
+
+    # for submission in submissions:
+    #     print(submission.code)
+    #     print(submission.score)
+    #     print(submission.user.username)
     return render_template('submissions.html', user=current_user, submissions=submissions)
 
 @views.route("/playground", methods=['GET', 'POST'])
@@ -68,7 +74,7 @@ def playground():
             print(code)
             output = result(code, stdin)
             print(output)
-            return render_template("code.html", user=current_user, exercise=None, output=output)
+            return render_template("code.html", user=current_user, exercise=None, output=output, code=code, stdin=stdin)
     
     return render_template('code.html', user=current_user, exercise=None, output=None)
 
