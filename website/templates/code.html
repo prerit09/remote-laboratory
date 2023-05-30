@@ -4,15 +4,32 @@
 
 {% block content %} 
 
-<h1 class="display-1" align="center">{{exercise.id}}. {{exercise.title}} </h1>
+{% if exercise %}
 
+<h1 class="display-1" align="center">{{exercise.id}}. {{exercise.title}}</h1>
 <p align="center">Description : {{exercise.description}} </p>
 
-<p align="center">Solution : {{exercise.solution}} </p>
+{% if exercise.countdown %}
+<p id="countdown" align="center">Total Time : {{exercise.countdown}}</p>
+{% endif %}
 
-{% for testcase in testcases %} 
+{% if exercise.description_file_data %}
+<p id="description_file" align="center">Download Exercise Description : <a href="/exercise/description/{{exercise.id}}" target="_blank">{{exercise.description_file_name}}</a></p>
+{% endif %}
+
+<p class="fw-bold" align="center" id="count"></p>
+
+<!-- <script type="text/javascript">
+    onclick= 
+    countdown('{{exercise.countdown}}');
+</script> -->
+<!-- <p align="center">Solution : {{exercise.solution}} </p> -->
+<!-- {% for testcase in testcases %} 
 <p align="center">Test Case : {{testcase.input}} - {{testcase.output}} </p>
-{% endfor %} 
+{% endfor %}  -->
+{% else %} 
+<h1 class="display-1" align="center">Playground</h1>
+{% endif %} 
 
 <p align="center">Logged in as : {{user.username}} </p>
 
@@ -22,16 +39,27 @@
             <form action="#" method="post">
                 <div class="form-group">
                     <label for="code" class="mt-3 mb-2">Enter Code:</label>
-                    <textarea id="code" class="form-control border border-secondary rounded" name="code" rows="10"> </textarea>
+                    {% if code %} 
+                    <textarea id="code" class="form-control border border-secondary rounded" name="code" rows="10"> {{code}} </textarea>
+                    {% else %} 
+                    <textarea id="code" class="form-control border border-secondary rounded" name="code" rows="10"></textarea>
+                    {% endif %} 
+
                 </div>
                 <div class="form-group">
                     <label for="stdin" class="mt-3 mb-2">Input:</label>
-                    <textarea class="form-control" id="stdin" name="stdin" rows="5"> </textarea>
+                    {% if stdin %} 
+                    <textarea class="form-control" id="stdin" name="stdin" rows="5">{{stdin}}</textarea>
+                    {% else %} 
+                    <textarea class="form-control" id="stdin" name="stdin" rows="5"></textarea>
+                    {% endif %} 
                 </div>
                 <div class="d-flex justify-content-center">
-                    <button type="submit" name="action" value="submit" onclick="return confirm('Are you sure?')" class="btn btn-primary m-3">Submit</button>
-                    <input type ="submit" name="action" value="Run" class="btn btn-primary m-3">
+                    {% if exercise %} 
+                    <button id="submit" type="submit" name="action" value="submit" onclick="return confirm('Are you sure?')" class="btn btn-primary m-3">Submit</button>
                     <input type ="submit" name="action" value="Test" class="btn btn-primary m-3">
+                    {% endif %} 
+                    <input type ="submit" name="action" value="Run" class="btn btn-primary m-3">
                     <button type="reset" value="reset" class="btn btn-primary m-3">Reset</button>
                 </div>
             </form>
@@ -57,4 +85,8 @@
         </div>
     </div>
 
+<script type="text/javascript">
+
+
+</script>
 {% endblock %}

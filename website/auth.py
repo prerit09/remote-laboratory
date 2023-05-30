@@ -36,7 +36,7 @@ def login():
 
 @auth.route("/sign-up", methods=['GET', 'POST'])
 def sign_up():
-    professor_token_valid = ['123','234']
+    professor_token_valid = ['123','234', '345']
     if request.method == 'POST':
         email = request.form.get("email")
         username = request.form.get("username")

@@ -7,66 +7,62 @@
 
 {% if user.professor_token != None %}
 
-<h1 class="display-1" align="center"> Create an Exercise </h1>
+    <h1 class="display-1" align="center"> Exercises </h1>
 
-<form method="POST">
-    <div class="form-group" id="exercisedetails">
-        <label for="title">Title</label>
-        <input
-        type="text"
-        id="title"
-        required="true"
-        name="title"
-        class="form-control"
-        placeholder="Enter Title"
-        />
-        <br />
-        <label for="description">Description</label>
-        <input
-        type="text"
-        id="description"
-        required="true"
-        name="description"
-        class="form-control"
-        placeholder="Enter Description"
-        />
-        <br />
-        <label id="solutionlabel" style="display: none;" for="solution">Solution</label>
-        <input
-        type="solution"
-        id="solution"
-        name="solution"
-        class="form-control"
-        style="display: none;"
-        placeholder="Enter Solution"
-        />
+{% for exercise in exercises %}
+<div class="card border-dark">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <p class="lead">{{exercise.id}}. <a href="/exercise/{{exercise.id}}">{{exercise.title}}</a></p>
+        <p class="lead">{{exercise.user.username}}</p>
+        <div>
+            {% if user.id == exercise.author %}
 
-        <label id="testcaselabel" style="display: none;" for="testcase">Test Cases</label>
-        <div id="choicebuttons">
-
-            <br />
-                <div align="center">
-                    <i id="solutionbutton" class="btn btn-secondary" onclick="singleSolution()">Add Single Solution</i>
-                    <i id="testcasebutton" class="btn btn-secondary" onclick="testCase()">Add Test Case(s)</i>
-                </div>       
-            <br />
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"> More
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="/view-submissions/{{exercise.id}}" class="dropdown-item">View Submissions</a></li>
+                        <li><a href="/delete-exercise/{{exercise.id}}" onclick="return confirm('Are you sure?')" class="dropdown-item">Delete</a></li>
+                    </ul>
+                </div>
+            
+            {% else %}
+            {% endif %}
+            
         </div>
-        <div align="center"><button class="btn btn-primary" type="submit">Done</button></div>        
+
     </div>
-</form>
+</div>
+{% endfor %} 
 
 {% else %}
 
 <h1 class="display-1" align="center"> Exercises </h1>
 
-{% for exercise in exercises %}
-<div class="card border-dark">
-    <div class="card-header">
-        <p>{{exercise.id}}. <a href="/exercise/{{exercise.id}}">{{exercise.title}}</a></p>
-    </div>
-</div>
-{% endfor %} 
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Exercise</th>
+        <th scope="col">Created By</th>
+        <th scope="col">Start</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for exercise in exercises %}
+    <tr>
+    <th scope="row">{{loop.index}}</th>
+    <td>{{exercise.title}}</td>
+    <td>{{exercise.user.username}}</td>
+    <td>
+        <a href="/exercise/{{exercise.id}}"><button type="button" class="btn btn-primary">Start</button></a>
+    </td>
+    </tr>
+{% endfor %}
+
+</tbody>
+</table>
+  
 {% endif %}
 
 {% endblock %}
-
