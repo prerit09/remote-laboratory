@@ -6,10 +6,13 @@ from flask_login import LoginManager
 db = SQLAlchemy()
 DB_NAME = "database.db"
 
-def create_app():
+def create_app(db_uri=f'sqlite:///{DB_NAME}'):
     app = Flask(__name__)
     app.config['SECRET_KEY'] = "helloworld"
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    # if db is not None:
+    #     app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+    # else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
     db.init_app(app)
 
     from .views import views
