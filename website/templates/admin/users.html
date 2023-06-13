@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %} Admin Portal {% endblock %}
+
+{% block content %} 
+
+<h1 class="display-1" align="center"> Users </h1>
+<table class="table">
+    <thead>
+        <tr>
+        <th scope="col">#</th>
+        <th scope="col">User</th>
+        <th scope="col">Role</th>
+        <th scope="col">Created At</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for role in roles %}
+    <tr>
+    <th scope="row">{{loop.index}}</th>
+    <td>{{role.user.username}}</td>
+    <td>{{role.role}}</td>
+    <td>{{role.user.date_created}}</td>
+    </tr>
+    {% endfor %}
+
+</tbody>
+</table>
+
+
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %} Admin Portal {% endblock %}
+
+{% block content %} 
+
+<h1 class="display-1" align="center"> Admin Portal </h1>
+<div align="center">
+    <a href="/create-user"><button type="button" class="btn btn-primary btn-lg">Create a User</button></a>
+    <a href="/users"><button type="button" class="btn btn-primary btn-lg">View all Users</button></a>
+    <a href="/delete-user"><button type="button" class="btn btn-primary btn-lg">Delete a User</button></a>
+</div>
+
+
+{% endblock %}

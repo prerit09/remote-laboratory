@@ -2,7 +2,7 @@ from io import BytesIO
 from .common_code import result
 from flask import Blueprint, render_template, request, flash, redirect, url_for, send_file
 from flask_login import login_required, current_user
-from .models import User, Exercise, TestCase, Submission
+from .models import User, Exercise, TestCase, Submission, Role
 # Post, Comment, Like
 from . import db
 
@@ -21,6 +21,30 @@ def save_submission(code, exercise, passed):
         print("Here : " + str(e) + "End")
 
 views = Blueprint("views", __name__)
+
+@views.route("/admin")
+@login_required
+def admin():
+    admin_username = "admin"
+    if admin_username in current_user.username:
+        return render_template('admin/admin.html', user=current_user)
+    else:
+        flash('This user does not have admin access.', category='error')
+        return redirect(url_for('views.home'))
+
+@views.route("/users")
+@login_required
+def users():
+    admin_username = "admin"
+    if admin_username in current_user.username:
+        all_users = User.query.all()
+        roles = Role.query.all()
+        print(all_users[0].role[0].role)
+        print(roles)
+        return render_template('admin/users.html', user=current_user, roles=roles)
+    else:
+        flash('This user does not have admin access.', category='error')
+        return redirect(url_for('views.home'))
 
 @views.route("/")
 @views.route("/home")
@@ -158,15 +182,6 @@ def exercise(exercise_id):
     print("in progress")
     return render_template("code.html", user=current_user, exercise=exercise, output=None)
 
-# @views.route("/submission/<submission_id>", methods=['POST'])
-# @login_required
-# def submission(submission_id):
-#     if request.method == 'POST':
-#         print(submission_id)
-
-#     # exercise = Exercise.query.filter_by(id=exercise_id).first()
-#     return render_template("views.home", user=current_user, exercise=exercise)
-
 @views.route("/create-exercise", methods=['GET', 'POST'])
 @login_required
 def create_exercise():
@@ -224,98 +239,3 @@ def create_exercise():
             flash('Exercise created!', category='success')
             return redirect(url_for("views.home"))
     return render_template('create_exercise.html', user=current_user)
-
-# @views.route("/create-post", methods=['GET', 'POST'])
-# @login_required
-# def create_post():
-#     if request.method == "POST":
-#         text = request.form.get('text')
-#         if not text:
-#             flash('Post cannot be empty', category='error')
-#         else:
-#             post = Post(text=text, author=current_user.id)
-#             db.session.add(post)
-#             db.session.commit()
-#             flash('Post created!', category='success')
-#             return redirect(url_for("views.home"))
-#     return render_template('create_post.html', user=current_user)
-
-# @views.route("/delete-post/<id>")
-# @login_required
-# def delete_post(id):
-#     post = Post.query.filter_by(id=id).first()    
-#     if not post:
-#         flash("Post does not exist", category="error")
-#     elif current_user.id != post.author:
-#         flash("You do not have permission to delete this post.", category='error')
-#     else:
-#         db.session.delete(post)
-#         db.session.commit()
-#         flash('Post deleted.', category='success')
-
-
-#     return redirect(url_for("views.home"))
-
-# @views.route("/posts/<username>")
-# @login_required
-# def posts(username):
-#     user = User.query.filter_by(username=username).first()
-#     if not user:
-#         flash('No user with that username exists', category='error')
-#         return redirect(url_for('views.home'))
-    
-#     posts = user.posts
-    
-
-#     return render_template("posts.html", user=current_user, posts=posts, username=username)
-
-# @views.route("/create-comment/<post_id>", methods=['POST'])
-# @login_required
-# def create_comment(post_id):
-#     text = request.form.get('text')
-#     if not text:
-#         flash('Comment cannot be empty', category='error')
-#     else:
-#         post = Post.query.filter_by(id=post_id)
-#         if post:
-#             comment = Comment(text=text, author=current_user.id, post_id=post_id)
-#             db.session.add(comment)
-#             db.session.commit()
-#             flash('Post deleted.', category='success')
-#         else:
-#             flash('Post does not exist', category='error')
-
-#     return redirect(url_for('views.home'))
-    
-# @views.route("/delete-comment/<comment_id>")
-# @login_required
-# def delete_comment(comment_id):
-#     comment = Comment.query.filter_by(id=comment_id).first()
-#     if not comment:
-#         flash('Comment does not exist.', category='error')
-#     elif current_user.id != comment.author and current_user.id != comment.post.author:
-#         flash('You do not have permission to delete this comment.', category='error')
-#     else:
-#         db.session.delete(comment)
-#         db.session.commit()
-#         flash('Comment deleted.', category='success')
-    
-#     return redirect(url_for('views.home'))
-
-# @views.route("/like-post/<post_id>", methods=['POST'])
-# @login_required
-# def like(post_id):
-#     post = Post.query.filter_by(id=post_id).first()
-#     like = Like.query.filter_by(author=current_user.id, post_id=post_id).first()
-
-#     if not post:
-#         return jsonify({"error" : "Post does not exist."}, 400)
-#     elif like:
-#         db.session.delete(like)
-#         db.session.commit()
-#     else:
-#         like=Like(author=current_user.id, post_id=post_id)
-#         db.session.add(like)
-#         db.session.commit()
-
-#     return jsonify({"likes": len(post.likes), "liked" : current_user.id in map(lambda x: x.author, post.likes)})

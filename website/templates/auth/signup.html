@@ -43,6 +43,21 @@
         placeholder="Enter Password Again"
         />
         <br />
+        <label for="role_label">Role</label>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="role" id="student" value="Student" onclick="professorCheck()" checked>
+            <label class="form-check-label" for="student">
+              Student
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="role" id="professor" value="Professor" onclick="professorCheck()">
+            <label class="form-check-label" for="professor">
+              Professor
+            </label>
+        </div>
+        <br />
+        <div id="professor_token_div" style="display:none">
         <label for="professor_token">Professor Token (Optional)</label>
         <input
         type="password"
@@ -51,6 +66,7 @@
         class="form-control"
         placeholder="Enter Professor Token (Optional)"
         />
+        </div>
         <br/>
         <div align="center"><button class="btn btn-primary" type="submit">Sign Up</button></div>        
     </div>
