@@ -19,6 +19,7 @@
       <th scope="col">Score</th>
       <th scope="col">Code</th>
       <th scope="col">Submitted At</th>
+      <th scope="col">Feedback</th>
     </tr>
   </thead>
   <tbody>
@@ -49,8 +50,49 @@
             </div>
           </div>
         </div>
+        <!-- Modal Definition End -->
       </td>
       <td>{{submission.date_created}}</td>
+      <td>
+        {% if submission.feedback %}
+          {{submission.feedback}}
+        {% else %}
+        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#feedback-{{submission.id}}">
+          Add Feedback
+        </button>
+        <!-- Modal -->
+        <div class="modal fade" id="feedback-{{submission.id}}" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form id="feedback-form"  action="/add-feedback/{{submission.id}}" method="post">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="feedbackForm">Feedback</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <input
+                  type="text"
+                  id="feedback"
+                  name="feedback"
+                  class="form-control"
+                  placeholder="Enter Feedback"
+                  />
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-success">Submit</button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Dismiss</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <!-- Modal Definition End -->
+        {% endif %}
+        <!-- Button trigger modal -->
+        <!-- Modal -->
+
+
+      </td>
     </tr>
 {% endfor %}
 

@@ -62,6 +62,7 @@
         <th scope="col">Exercise</th>
         <th scope="col">Created By</th>
         <th scope="col">Start</th>
+        <th scope="col">More</th>
       </tr>
     </thead>
     <tbody>
@@ -70,12 +71,27 @@
     <th scope="row">{{loop.index}}</th>
     <td>{{exercise.title}}</td>
     <td>{{exercise.user.username}}</td>
+
     <td>
         <a href="/exercise/{{exercise.id}}"><button type="button" class="btn btn-primary">Start</button></a>
+    </td>        
+        
+    <td>
+        <div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown"> More
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="/feedback/{{user.id}}/{{exercise.id}}" class="dropdown-item">View Feedback</a></li>
+                    <!-- <li><a href="/exercise/{{exercise.id}}" class="dropdown-item">Start</a></li> -->
+                    <!-- <li><a href="/delete-exercise/{{exercise.id}}" onclick="return confirm('Are you sure?')" class="dropdown-item">Delete</a></li> -->
+                </ul>
+            </div>
+        </div>
     </td>
+    
     </tr>
         {% endfor %}
-
 </tbody>
 </table>
   

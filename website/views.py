@@ -70,6 +70,33 @@ def delete_exercise(exercise_id):
     
     return redirect(url_for('views.exercises'))
 
+@views.route("/feedback/<user_id>/<exercise_id>", methods=['GET', 'POST'])
+@login_required
+def view_feedback(user_id, exercise_id):
+    submissions = Submission.query.filter_by(author = user_id, exercise_id=exercise_id).all()
+    if not submissions:
+        flash('No submissions/feedbacks yet!', category='error')
+        return redirect(url_for('views.exercises'))
+    else:
+        exercise_name = submissions[0].exercise.title
+        return render_template('feedback.html', user=current_user, submissions=submissions, exercise_name=exercise_name)
+
+@views.route("/add-feedback/<submission_id>", methods=['GET', 'POST'])
+@login_required
+def add_feedback(submission_id):
+    if request.method == 'POST':
+        feedback = request.form.get('feedback')
+        submission = Submission.query.filter_by(id=submission_id).first()
+
+        if not feedback:
+            flash('Feedback cannot be empty.', category='error')
+        else:
+            submission.feedback = feedback
+            db.session.commit()
+            flash('Feedback added successfully.', category='success')
+    
+        return redirect(url_for("views.view_submissions", exercise_id = submission.exercise.id))
+
 @views.route("/view-submissions/<exercise_id>", methods=['GET', 'POST'])
 @login_required
 def view_submissions(exercise_id):
@@ -80,12 +107,6 @@ def view_submissions(exercise_id):
     else:
         exercise_name = submissions[0].exercise.title
         return render_template('submissions.html', user=current_user, submissions=submissions, exercise_name=exercise_name)
-
-    # for submission in submissions:
-    #     print(submission.code)
-    #     print(submission.score)
-    #     print(submission.user.username)
-    return render_template('submissions.html', user=current_user, submissions=submissions)
 
 @views.route("/playground", methods=['GET', 'POST'])
 @login_required
@@ -106,10 +127,13 @@ def playground():
 @login_required
 def exercises():
     exercises = Exercise.query.all()
+    # feedback = 0
+    # for exercise in exercises:
+    #     for submission in (exercise.submission):
+    #         if submission.author == current_user.id:
+    #             feedback = submission.feedback
+    #             break
 
-    ## TBD
-    submission = Submission.query.filter_by(author=current_user.id, exercise_id=1)
-    print(submission)    
     return render_template('exercises.html', user=current_user, exercises=exercises)
 
 @views.route("/exercise/description/<exercise_id>", methods=['GET', 'POST'])

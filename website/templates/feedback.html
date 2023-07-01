@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %} Feedback {% endblock %}
+
+{% block content %} 
+
+<h1 class="display-1" align="center"> Feedbacks </h1>
+<h6 class="display-6" align="center"> Exercise: {{exercise_name}} </h1>
+
+
+<br />
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Username</th>
+        <th scope="col">Score</th>
+        <th scope="col">Code</th>
+        <th scope="col">Submitted At</th>
+        <th scope="col">Feedback</th>
+        <th scope="col">Feedback By</th>
+    </tr>
+    </thead>
+    <tbody>
+{% for submission in submissions %}
+    <tr>
+        <th scope="row">{{loop.index}}</th>
+        <td>{{submission.user.username}}</td>
+        <td>{{submission.score}}</td>
+        <td>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#submission{{submission.id}}">
+            View Code
+        </button>
+        <!-- Modal -->
+        <div class="modal fade" id="submission{{submission.id}}" tabindex="-1">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Code</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                <code>{{submission.code}}</code>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+            </div>
+        </div>
+        <!-- Modal Definition End -->
+        </td>
+        <td>{{submission.date_created}}</td>
+        <td>{{submission.feedback}}</td>
+        <td>{{submission.exercise.user.username}}</td>
+    </tr>
+{% endfor %}
+
+    </tbody>
+</table>
+    
+{% endblock %}
+

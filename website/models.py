@@ -3,6 +3,8 @@ from flask_login import UserMixin
 from sqlalchemy.sql import func
 
 class User(db.Model, UserMixin):
+    __tablename__ = 'user'
+
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(150), unique=True)
     username = db.Column(db.String(150), unique=True)
@@ -14,11 +16,15 @@ class User(db.Model, UserMixin):
     submission = db.relationship('Submission', backref='user', passive_deletes=True)
 
 class Role(db.Model, UserMixin):
+    __tablename__ = 'role'
+    
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
     role = db.Column(db.String(150))
     
 class Exercise(db.Model):
+    __tablename__ = 'exercise'
+
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(150), unique=True)
     description = db.Column(db.String(150), unique=False)
@@ -32,14 +38,19 @@ class Exercise(db.Model):
     submission = db.relationship('Submission', backref='exercise', passive_deletes=True)
 
 class Submission(db.Model):
+    __tablename__ = 'submission'
+
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(250))
     score = db.Column(db.String(150))
+    feedback = db.Column(db.String(150))
     author = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
     exercise_id = db.Column(db.Integer, db.ForeignKey('exercise.id', ondelete="CASCADE"), nullable=False)
     date_created = db.Column(db.DateTime(timezone=True), default=func.now())
 
 class TestCase(db.Model):
+    __tablename__ = 'testcase'
+
     id = db.Column(db.Integer, primary_key=True)
     input = db.Column(db.String(150), unique=True)
     output = db.Column(db.String(150), unique=False)
