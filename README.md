@@ -1,5 +1,5 @@
-## Flask Blog (flask-blog)
-You can register as a user and add/remove posts, comment and like on a post. So it is just like a social media.
+## Remote Lab
+Remote Laboratory
 
 #### Prerequisites
 You should have python installed on the system.
