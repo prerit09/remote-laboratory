@@ -4,7 +4,6 @@ from flask import Flask, redirect, url_for, render_template, request
 
 def result(code, input, expected=None):
     if(request.method == "POST"):
-        
         # url = "http://localhost:2358/submissions?wait=true"
         url = "http://141.24.210.95:2358/submissions?wait=true"
         
