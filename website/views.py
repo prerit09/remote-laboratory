@@ -113,6 +113,22 @@ def update_feedback(submission_id):
     
         return redirect(url_for("views.view_submissions", exercise_id = submission.exercise.id))
 
+@views.route("/update-score/<submission_id>", methods=['GET', 'POST'])
+@login_required
+def update_score(submission_id):
+    if request.method == 'POST':
+        feedback = request.form.get('score')
+        submission = Submission.query.filter_by(id=submission_id).first()
+
+        if not feedback:
+            flash('Score cannot be empty.', category='error')
+        else:
+            submission.score = feedback
+            db.session.commit()
+            flash('Score updated successfully.', category='success')
+    
+        return redirect(url_for("views.view_submissions", exercise_id = submission.exercise.id))
+
 @views.route("/view-submissions/<exercise_id>", methods=['GET', 'POST'])
 @login_required
 def view_submissions(exercise_id):

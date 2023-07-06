@@ -27,7 +27,39 @@
     <tr>
       <th scope="row">{{loop.index}}</th>
       <td>{{submission.user.username}}</td>
-      <td>{{submission.score}}</td>
+      <td>{{submission.score}}
+        <i id="like-button" onclick="like()" class="fa-solid fa-edit" data-bs-toggle="modal" data-bs-target="#updatescore-{{submission.id}}"></i>
+            
+            
+            <!-- Update Modal -->
+            <div class="modal fade" id="updatescore-{{submission.id}}" tabindex="-1">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <form id="feedback-form"  action="/update-score/{{submission.id}}" method="post">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="feedbackForm">Update Score</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <input
+                      type="text"
+                      id="score"
+                      name="score"
+                      class="form-control"
+                      placeholder="Enter Score"
+                      />
+                    </div>
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-success">Submit</button>
+                      <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Dismiss</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+
+      </td>
       <td>
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#submission{{submission.id}}">
