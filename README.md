@@ -6,6 +6,7 @@ Following are the prerequisites that must be present on the system before deploy
 * Python
 * Docker
 * PIP - Python's Package Management System
+* Shell or Bash Client
 
 ### Installing Judge0 Code Execution System Client
 #### For Windows
