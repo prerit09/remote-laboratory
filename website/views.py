@@ -171,31 +171,39 @@ def exercise(exercise_id):
                 if(request.form['action'] == "submit"):
                     save_submission(code,exercise,score)
                     return redirect(url_for("views.home"))
-                return render_template("code.html", user=current_user, exercise=exercise, output=output)
+                return render_template("code.html", user=current_user, code=code, exercise=exercise, output=output)
             elif exercise.testcase :
                 print("Multiple Test Cases")
+                error_flag=False
 
                 outputs=[]
                 for testcase in testcases:
                     output = result(code, testcase.input, testcase.output)
-                    outputs.append(output)
+                    if('error' in output.keys()):
+                        error_flag=True
+                    else:
+                        outputs.append(output)
 
-                passed=0
-                for output in outputs:  
-                    print(output['status']['description'])
-                    if(output['status']['description'] == 'Accepted'):
-                        passed+=1
-                
-                if passed == len(testcases):
-                    html = "Congratulations! All test cases passed!"
+                if not error_flag:
+
+                    passed=0
+
+                    for output in outputs:  
+                        print(output['status']['description'])
+                        if(output['status']['description'] == 'Accepted'):
+                            passed+=1
+                    
+                    if passed == len(testcases):
+                        html = "Congratulations! All test cases passed!"
+                    else:
+                        html = str(passed) + "/" + str(len(testcases))
                 else:
-                    html = str(passed) + "/" + str(len(testcases))
-
+                    html = "Error in code"
             if(request.form['action'] == "submit"):
                 save_submission(code,exercise,passed)
                 return redirect(url_for("views.home"))
 
-            return render_template("code.html", user=current_user, exercise=exercise, output=None, testcase=html)
+            return render_template("code.html", user=current_user, code=code, exercise=exercise, output=None, testcase=html)
     # else:
     #     print("code submitted")
     #     code = request.form.get('code')

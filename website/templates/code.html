@@ -73,12 +73,18 @@
                 {% endif %}
                 
                 {% if output is not none %}
-                    {% autoescape false %}
-                        <pre>Output: </pre><pre>{{output['stdout']}}</pre>
-                        <pre>Time Taken: <pre>{{ output['time'] }}</pre></pre>
-                        <pre>Error: <pre>{{ output['stderr'] }}</pre></pre>
-                        <pre>Status: <pre>{{ output['status']['description'] }}</pre></pre>
-                    {% endautoescape %}                
+                    {% if output['error'] %}
+                        {% autoescape false %}
+                                <pre>Something went wrong. Please check your code!!!</pre>
+                        {% endautoescape %}
+                    {% else %}               
+                        {% autoescape false %}
+                            <pre>Output: </pre><pre>{{output['stdout']}}</pre>
+                            <pre>Time Taken: <pre>{{ output['time'] }}</pre></pre>
+                            <pre>Error: <pre>{{ output['stderr'] }}</pre></pre>
+                            <pre>Status: <pre>{{ output['status']['description'] }}</pre></pre>
+                        {% endautoescape %}                
+                    {% endif %}
                 {% endif %}
                 
             </div>

@@ -28,7 +28,6 @@ def result(code, input, expected=None):
         token = x['token']
         
         output = requests.get("http://localhost:2358/submissions/"+str(token))
-        
         # print(output.json())
         
         # json_output = output.json()
@@ -40,5 +39,6 @@ def result(code, input, expected=None):
         #     json_output['status']['description'])
         
         # out = out.replace('\n', '<br>')
-
+        print("here sis op")
+        print(output.json())
         return output.json()
