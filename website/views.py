@@ -97,6 +97,22 @@ def add_feedback(submission_id):
     
         return redirect(url_for("views.view_submissions", exercise_id = submission.exercise.id))
 
+@views.route("/update-feedback/<submission_id>", methods=['GET', 'POST'])
+@login_required
+def update_feedback(submission_id):
+    if request.method == 'POST':
+        feedback = request.form.get('feedback')
+        submission = Submission.query.filter_by(id=submission_id).first()
+
+        if not feedback:
+            flash('Feedback cannot be empty.', category='error')
+        else:
+            submission.feedback = feedback
+            db.session.commit()
+            flash('Feedback updated successfully.', category='success')
+    
+        return redirect(url_for("views.view_submissions", exercise_id = submission.exercise.id))
+
 @views.route("/view-submissions/<exercise_id>", methods=['GET', 'POST'])
 @login_required
 def view_submissions(exercise_id):
@@ -197,12 +213,15 @@ def exercise(exercise_id):
                         html = "Congratulations! All test cases passed!"
                     else:
                         html = str(passed) + "/" + str(len(testcases))
+
+                    if(request.form['action'] == "submit"):
+                        
+                        save_submission(code,exercise,passed)
+                        return redirect(url_for("views.home"))
+
                 else:
                     html = "Error in code"
-            if(request.form['action'] == "submit"):
-                save_submission(code,exercise,passed)
-                return redirect(url_for("views.home"))
-
+            
             return render_template("code.html", user=current_user, code=code, exercise=exercise, output=None, testcase=html)
     # else:
     #     print("code submitted")

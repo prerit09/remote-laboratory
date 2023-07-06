@@ -60,7 +60,7 @@
         <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#feedback-{{submission.id}}">
           Add Feedback
         </button>
-        <!-- Modal -->
+        <!-- Add Modal -->
         <div class="modal fade" id="feedback-{{submission.id}}" tabindex="-1">
           <div class="modal-dialog">
             <div class="modal-content">
@@ -86,11 +86,42 @@
             </div>
           </div>
         </div>
-        <!-- Modal Definition End -->
+        <!-- Add Modal Definition End -->
         {% endif %}
         <!-- Button trigger modal -->
-        <!-- Modal -->
-
+        
+        <!-- Update Modal -->
+        {% if submission.feedback %}
+          <i id="like-button" onclick="like()" class="fa-solid fa-edit" data-bs-toggle="modal" data-bs-target="#updatefeedback-{{submission.id}}"></i>
+            
+            
+            <!-- Update Modal -->
+            <div class="modal fade" id="updatefeedback-{{submission.id}}" tabindex="-1">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <form id="feedback-form"  action="/update-feedback/{{submission.id}}" method="post">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="feedbackForm">Update Feedback</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <input
+                      type="text"
+                      id="feedback"
+                      name="feedback"
+                      class="form-control"
+                      placeholder="Enter Feedback"
+                      />
+                    </div>
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-success">Submit</button>
+                      <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Dismiss</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+        {% endif %}
 
       </td>
     </tr>
