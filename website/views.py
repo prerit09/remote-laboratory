@@ -3,7 +3,6 @@ from .common_code import result
 from flask import Blueprint, render_template, request, flash, redirect, url_for, send_file
 from flask_login import login_required, current_user
 from .models import User, Exercise, TestCase, Submission, Role
-# Post, Comment, Like
 from . import db
 
 def save_submission(code, exercise, passed):
@@ -159,12 +158,9 @@ def playground():
 @login_required
 def exercises():
     exercises = Exercise.query.all()
-    # feedback = 0
-    # for exercise in exercises:
-    #     for submission in (exercise.submission):
-    #         if submission.author == current_user.id:
-    #             feedback = submission.feedback
-    #             break
+    if not exercises:
+        flash("Exercises not available.", category="error")
+        return redirect(url_for("views.home"))
 
     return render_template('exercises.html', user=current_user, exercises=exercises)
 
@@ -239,11 +235,6 @@ def exercise(exercise_id):
                     html = "Error in code"
             
             return render_template("code.html", user=current_user, code=code, exercise=exercise, output=None, testcase=html)
-    # else:
-    #     print("code submitted")
-    #     code = request.form.get('code')
-
-
         return render_template("code.html", user=current_user, exercise=exercise, output=None)
 
     print("in progress")
@@ -258,51 +249,54 @@ def create_exercise():
         solution = request.form.get('solution')
         countdown = request.form.get('countdown')
         description_file = request.files['descriptionfile']
-
-        if not solution:
-            count=1
-            test_cases_dict = {}
-            stdin = request.form.get("stdin"+str(count))
-            while(stdin is not None):
-                stdin = request.form.get("stdin"+str(count))
-                test_cases_dict[stdin] = request.form.get("stdout"+str(count))
-                count+=1
-                stdin = request.form.get("stdin"+str(count))
-
-            if not description_file:
-                if not countdown:
-                    exercise = Exercise(title=title, description=description, author=current_user.id)
-                else:
-                    exercise = Exercise(title=title, description=description, author=current_user.id, countdown=countdown)
-            else:
-                if not countdown:
-                    exercise = Exercise(title=title, description=description, description_file_name=description_file.filename, description_file_data=description_file.read(), author=current_user.id)
-                else:
-                    exercise = Exercise(title=title, description=description, description_file_name=description_file.filename, description_file_data=description_file.read(), author=current_user.id, countdown=countdown)
-            db.session.add(exercise)
-            db.session.commit()
-            
-            for stdin in test_cases_dict.keys():
-                testcase = TestCase(input=stdin, output=test_cases_dict[stdin], author=current_user.id, exercise_id=exercise.id)
-                db.session.add(testcase)
-                db.session.commit()
-
-            print(exercise.testcase)
-            flash('Exercise created!', category='success')
-
+        test_case = request.form.get("stdin1")
+        if not solution and not test_case:
+            flash("Provide either solution or a test case.", category="error")
         else:
-            if not description_file:
-                if not countdown:
-                    exercise = Exercise(title=title, description=description, solution=solution, author=current_user.id)
+            if not solution:
+                count=1
+                test_cases_dict = {}
+                stdin = request.form.get("stdin"+str(count))
+                while(stdin is not None):
+                    stdin = request.form.get("stdin"+str(count))
+                    test_cases_dict[stdin] = request.form.get("stdout"+str(count))
+                    count+=1
+                    stdin = request.form.get("stdin"+str(count))
+
+                if not description_file:
+                    if not countdown:
+                        exercise = Exercise(title=title, description=description, author=current_user.id)
+                    else:
+                        exercise = Exercise(title=title, description=description, author=current_user.id, countdown=countdown)
                 else:
-                    exercise = Exercise(title=title, description=description, solution=solution, author=current_user.id, countdown=countdown)
+                    if not countdown:
+                        exercise = Exercise(title=title, description=description, description_file_name=description_file.filename, description_file_data=description_file.read(), author=current_user.id)
+                    else:
+                        exercise = Exercise(title=title, description=description, description_file_name=description_file.filename, description_file_data=description_file.read(), author=current_user.id, countdown=countdown)
+                db.session.add(exercise)
+                db.session.commit()
+                
+                for stdin in test_cases_dict.keys():
+                    testcase = TestCase(input=stdin, output=test_cases_dict[stdin], author=current_user.id, exercise_id=exercise.id)
+                    db.session.add(testcase)
+                    db.session.commit()
+
+                print(exercise.testcase)
+                flash('Exercise created!', category='success')
+
             else:
-                if not countdown:
-                    exercise = Exercise(title=title, description=description, description_file_name=description_file.filename, description_file_data=description_file.read(), solution=solution, author=current_user.id)
+                if not description_file:
+                    if not countdown:
+                        exercise = Exercise(title=title, description=description, solution=solution, author=current_user.id)
+                    else:
+                        exercise = Exercise(title=title, description=description, solution=solution, author=current_user.id, countdown=countdown)
                 else:
-                    exercise = Exercise(title=title, description=description, description_file_name=description_file.filename, description_file_data=description_file.read(), solution=solution, author=current_user.id, countdown=countdown)
-            db.session.add(exercise)
-            db.session.commit()
-            flash('Exercise created!', category='success')
-            return redirect(url_for("views.home"))
+                    if not countdown:
+                        exercise = Exercise(title=title, description=description, description_file_name=description_file.filename, description_file_data=description_file.read(), solution=solution, author=current_user.id)
+                    else:
+                        exercise = Exercise(title=title, description=description, description_file_name=description_file.filename, description_file_data=description_file.read(), solution=solution, author=current_user.id, countdown=countdown)
+                db.session.add(exercise)
+                db.session.commit()
+                flash('Exercise created!', category='success')
+                return redirect(url_for("views.home"))
     return render_template('create_exercise.html', user=current_user)

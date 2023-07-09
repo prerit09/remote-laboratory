@@ -39,6 +39,6 @@ def result(code, input, expected=None):
         #     json_output['status']['description'])
         
         # out = out.replace('\n', '<br>')
-        print("here sis op")
-        print(output.json())
+        # print("here sis op")
+        # print(output.json())
         return output.json()

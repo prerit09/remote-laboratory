@@ -22,7 +22,6 @@ def create_app(db_uri=f'sqlite:///{DB_NAME}'):
     app.register_blueprint(auth, url_prefix="/")
 
     from .models import User
-    # , Post, Comment
 
     with app.app_context():
         db.create_all()
